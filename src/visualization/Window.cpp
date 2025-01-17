@@ -1,8 +1,8 @@
 #include "visualization/Window.hpp"
 
 Window::Window(int width, int height) : width(width), height(height) {
-  InitWindow(width, height, "Pathfinder");
-  SetTargetFPS(60);
+  InitWindow(width, height, WINDOW_TITLE);
+  SetTargetFPS(TARGET_FPS);
 }
 
 Window::~Window() { CloseWindow(); }
@@ -12,7 +12,7 @@ void Window::run() {
     handleEvents();
 
     BeginDrawing();
-    ClearBackground(BLACK);
+    ClearBackground(BACKGROUND_COLOR);
     EndDrawing();
   }
 }
