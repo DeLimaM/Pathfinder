@@ -34,11 +34,14 @@ void createGridGraph(Graph &graph, int rows, int cols, float spacing = 100.0f) {
 
 int main() {
   Window window(800, 600);
+  window.setTargetFPS(60);
+
   Graph graph;
 
   createGridGraph(graph, 15, 20);
 
   while (!window.shouldClose()) {
+    window.handleEvents();
     window.clear();
     window.draw(graph);
     window.display();

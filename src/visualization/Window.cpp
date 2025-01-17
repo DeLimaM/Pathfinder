@@ -20,7 +20,13 @@ void Window::run() {
 }
 
 void Window::handleEvents() {
-  // TODO: Handle events
+  int newWidth = GetScreenWidth();
+  int newHeight = GetScreenHeight();
+
+  if (newWidth != width || newHeight != height) {
+    width = newWidth;
+    height = newHeight;
+  }
 }
 
 void Window::draw(const Graph &graph) {

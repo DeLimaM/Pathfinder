@@ -15,9 +15,10 @@ public:
     ClearBackground(BACKGROUND_COLOR);
   }
   void display() { EndDrawing(); }
+  void handleEvents();
+  void setTargetFPS(int fps) { SetTargetFPS(fps); }
 
 private:
   int width;
   int height;
-  void handleEvents();
 };
