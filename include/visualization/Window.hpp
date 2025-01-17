@@ -9,6 +9,12 @@ public:
   ~Window();
   void run();
   void draw(const Graph &graph);
+  bool shouldClose() const { return WindowShouldClose(); }
+  void clear() {
+    BeginDrawing();
+    ClearBackground(BACKGROUND_COLOR);
+  }
+  void display() { EndDrawing(); }
 
 private:
   int width;
