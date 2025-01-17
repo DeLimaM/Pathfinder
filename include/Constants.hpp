@@ -5,6 +5,7 @@ constexpr int DEFAULT_WINDOW_WIDTH = 800;
 constexpr int DEFAULT_WINDOW_HEIGHT = 600;
 constexpr int TARGET_FPS = 60;
 constexpr const char *WINDOW_TITLE = "Pathfinder";
+const float PADDING = 50.0f;
 
 constexpr Color BACKGROUND_COLOR = BLACK;
 constexpr Color NODE_COLOR = WHITE;
