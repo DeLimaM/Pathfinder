@@ -1,48 +1,40 @@
-#include "Constants.hpp"
+#include "PathfindingVisualizer.hpp"
 #include "algorithms/Dijkstra.hpp"
 #include "graph/Graph.hpp"
-#include "visualization/Window.hpp"
 #include <atomic>
-#include <chrono>
-#include <mutex>
-#include <thread>
+#include <cstddef>
 
-void createGridGraph(Graph &graph, int rows, int cols, float spacing = 100.0f) {
-  float startX = 0.0f;
-  float startY = 0.0f;
-
-  std::vector<size_t> vertices;
-  for (int row = 0; row < rows; row++) {
-    for (int col = 0; col < cols; col++) {
-      float x = startX + col * spacing;
-      float y = startY + row * spacing;
-      vertices.push_back(graph.addVertex({x, y}));
+void createGridGraph(Graph &graph, int rows, int cols) {
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      float x =
+          WINDOW_PADDING +
+          (j * ((DEFAULT_WINDOW_WIDTH - 2 * WINDOW_PADDING) / (cols - 1)));
+      float y =
+          WINDOW_PADDING +
+          (i * ((DEFAULT_WINDOW_HEIGHT - 2 * WINDOW_PADDING) / (rows - 1)));
+      graph.addVertex(Vector2{x, y});
     }
   }
 
-  for (int row = 0; row < rows; row++) {
-    for (int col = 0; col < cols; col++) {
-      size_t current = row * cols + col;
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      size_t current = i * cols + j;
 
-      if (col < cols - 1) {
-        graph.addEdge(vertices[current], vertices[current + 1]);
+      if (j < cols - 1) {
+        graph.addEdge(current, current + 1);
       }
-      if (row < rows - 1) {
-        graph.addEdge(vertices[current], vertices[current + cols]);
+
+      if (i < rows - 1) {
+        graph.addEdge(current, current + cols);
       }
     }
   }
-
-  graph.getVertex(vertices[0])->setColor(START_NODE_COLOR);
-  graph.getVertex(vertices[vertices.size() - 1])->setColor(END_NODE_COLOR);
 }
 
 int main() {
-  Dijkstra algorithm;
   Graph graph;
-
   std::atomic<bool> shouldExit = false;
-  Window window = Window(graph, shouldExit);
 
   const int rows = 25;
   const int cols = 25;
@@ -51,61 +43,9 @@ int main() {
   size_t start = 0;
   size_t end = (rows * cols) - 1;
 
-  std::thread algorithmThread([&]() {
-    algorithm.setVisualizationCallback(
-        [&graph, start, end,
-         &shouldExit](const std::vector<size_t> &currentPath) {
-          if (shouldExit) {
-            return;
-          }
-          for (const auto &vertex : graph.getVertices()) {
-            size_t index = std::find(graph.getVertices().begin(),
-                                     graph.getVertices().end(), vertex) -
-                           graph.getVertices().begin();
-            if (index != start && index != end) {
-              vertex->setColor(NODE_COLOR);
-              for (const auto &edge : vertex->getEdges()) {
-                edge->setColor(EDGE_COLOR);
-              }
-            }
-          }
-
-          for (size_t i = 0; i < currentPath.size() - 1; i++) {
-            if (currentPath[i] != start && currentPath[i] != end) {
-              auto vertex = graph.getVertex(currentPath[i]);
-              vertex->setColor(PATH_COLOR);
-            }
-
-            auto vertex1 = graph.getVertex(currentPath[i]);
-            auto vertex2 = graph.getVertex(currentPath[i + 1]);
-
-            for (const auto &edge : vertex1->getEdges()) {
-              if (edge->getOtherVertex(vertex1) == vertex2) {
-                edge->setColor(PATH_COLOR);
-                break;
-              }
-            }
-          }
-
-          if (!currentPath.empty() && currentPath.back() != start &&
-              currentPath.back() != end) {
-            graph.getVertex(currentPath.back())->setColor(PATH_COLOR);
-          }
-
-          graph.getVertex(start)->setColor(START_NODE_COLOR);
-          graph.getVertex(end)->setColor(END_NODE_COLOR);
-
-          std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
-        });
-
-    algorithm.findPath(graph, start, end);
-  });
-
-  window.run();
-
-  if (algorithmThread.joinable()) {
-    algorithmThread.join();
-  }
+  Dijkstra algorithm;
+  PathfindingVisualizer visualizer(graph, shouldExit, start, end);
+  visualizer.run(algorithm);
 
   return 0;
 }
