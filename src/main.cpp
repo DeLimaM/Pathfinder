@@ -3,6 +3,42 @@
 #include "graph/Graph.hpp"
 #include <atomic>
 #include <cstddef>
+#include <random>
+#include <set>
+#include <stdexcept>
+
+void createRandomGraph(Graph &graph, size_t vertices, size_t edges) {
+  size_t maxEdges = (vertices * (vertices - 1)) / 2;
+
+  if (edges > maxEdges) {
+    throw std::invalid_argument("Too many edges for given vertices");
+  }
+
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<float> posDist(
+      WINDOW_PADDING, DEFAULT_WINDOW_WIDTH - WINDOW_PADDING);
+  std::uniform_int_distribution<size_t> dis(0, vertices - 1);
+
+  std::set<std::pair<size_t, size_t>> addedEdges;
+
+  for (size_t i = 0; i < vertices; i++) {
+    Vector2 position = {posDist(gen), posDist(gen)};
+    graph.addVertex(position);
+  }
+
+  while (addedEdges.size() < edges) {
+    size_t from = dis(gen);
+    size_t to = dis(gen);
+
+    if (from != to) {
+      auto edge = std::minmax(from, to);
+      if (addedEdges.insert(edge).second) {
+        graph.addEdge(from, to);
+      }
+    }
+  }
+}
 
 void createGridGraph(Graph &graph, int rows, int cols) {
   for (int i = 0; i < rows; i++) {
@@ -36,12 +72,12 @@ int main() {
   Graph graph;
   std::atomic<bool> shouldExit = false;
 
-  const int rows = 25;
-  const int cols = 25;
-  createGridGraph(graph, rows, cols);
+  const size_t vertices = 20;
+  const size_t edges = 40;
+  createRandomGraph(graph, vertices, edges);
 
   size_t start = 0;
-  size_t end = (rows * cols) - 1;
+  size_t end = vertices - 1;
 
   Dijkstra algorithm;
   PathfindingVisualizer visualizer(graph, shouldExit, start, end);
