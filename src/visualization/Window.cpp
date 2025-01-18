@@ -2,8 +2,9 @@
 #include "graph/Graph.hpp"
 #include <cstddef>
 
-Window::Window(int width, int height, const char *title)
-    : width(width), height(height) {
+Window::Window(const Graph &graph, int width, int height, const char *title)
+    : width(width), height(height), graph(graph) {
+  SetConfigFlags(FLAG_WINDOW_RESIZABLE);
   InitWindow(width, height, title);
   SetTargetFPS(TARGET_FPS);
 }
@@ -16,6 +17,7 @@ void Window::run() {
 
     BeginDrawing();
     ClearBackground(BACKGROUND_COLOR);
+    draw(graph);
     EndDrawing();
   }
 }

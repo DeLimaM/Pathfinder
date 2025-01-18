@@ -38,9 +38,9 @@ void createGridGraph(Graph &graph, int rows, int cols, float spacing = 100.0f) {
 }
 
 int main() {
-  Window window = Window();
   Dijkstra algorithm;
   Graph graph;
+  Window window = Window(graph);
 
   const int rows = 25;
   const int cols = 25;
@@ -77,11 +77,7 @@ int main() {
     std::vector<size_t> path = algorithm.findPath(graph, start, end);
   });
 
-  while (!window.shouldClose()) {
-    window.clear();
-    window.draw(graph);
-    window.display();
-  }
+  window.run();
 
   pathfindingThread.join();
 
