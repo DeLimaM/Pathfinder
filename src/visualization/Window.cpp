@@ -2,8 +2,9 @@
 #include "graph/Graph.hpp"
 #include <cstddef>
 
-Window::Window(int width, int height) : width(width), height(height) {
-  InitWindow(width, height, WINDOW_TITLE);
+Window::Window(int width, int height, const char *title)
+    : width(width), height(height) {
+  InitWindow(width, height, title);
   SetTargetFPS(TARGET_FPS);
 }
 
