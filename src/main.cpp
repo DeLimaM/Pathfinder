@@ -2,7 +2,9 @@
 #include "algorithms/BruteForce.hpp"
 #include "graph/Graph.hpp"
 #include "visualization/Window.hpp"
+#include <atomic>
 #include <chrono>
+#include <mutex>
 #include <thread>
 
 void createGridGraph(Graph &graph, int rows, int cols, float spacing = 100.0f) {
@@ -35,55 +37,4 @@ void createGridGraph(Graph &graph, int rows, int cols, float spacing = 100.0f) {
   graph.setVertexColor(vertices[vertices.size() - 1], END_NODE_COLOR);
 }
 
-int main() {
-  Window window(800, 600, WINDOW_TITLE);
-  Graph graph;
-  createGridGraph(graph, 5, 5);
-
-  size_t start = 0;
-  size_t end = graph.getVertices().size() - 1;
-  BruteForce bruteForce;
-
-  std::vector<Color> originalColors;
-  for (const auto &vertex : graph.getVertices()) {
-    originalColors.push_back(vertex.color);
-  }
-
-  bruteForce.setVisualizationCallback(
-      [&](const std::vector<size_t> &currentPath) {
-        for (size_t i = 0; i < graph.getVertices().size(); i++) {
-          graph.setVertexColor(i, originalColors[i]);
-        }
-
-        for (size_t nodeIndex : currentPath) {
-          graph.setVertexColor(nodeIndex, PATH_COLOR);
-        }
-
-        graph.setVertexColor(start, START_NODE_COLOR);
-        graph.setVertexColor(end, END_NODE_COLOR);
-
-        window.clear();
-        window.draw(graph);
-        window.display();
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-      });
-
-  while (!window.shouldClose()) {
-    window.clear();
-    window.draw(graph);
-    window.display();
-
-    if (IsKeyPressed(KEY_SPACE)) {
-      auto path = bruteForce.findPath(graph, start, end);
-
-      for (size_t nodeIndex : path) {
-        graph.setVertexColor(nodeIndex, PATH_COLOR);
-      }
-      graph.setVertexColor(start, START_NODE_COLOR);
-      graph.setVertexColor(end, END_NODE_COLOR);
-    }
-  }
-
-  return 0;
-}
+int main() { return 0; }

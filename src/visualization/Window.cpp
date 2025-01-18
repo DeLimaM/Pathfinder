@@ -34,13 +34,13 @@ void Window::draw(const Graph &graph) {
   if (graph.getVertices().empty())
     return;
 
-  Vector2 min = graph.getVertex(0).position;
+  Vector2 min = graph.getVertex(0)->getPosition();
   Vector2 max = min;
   for (const auto &vertex : graph.getVertices()) {
-    min.x = std::min(min.x, vertex.position.x);
-    min.y = std::min(min.y, vertex.position.y);
-    max.x = std::max(max.x, vertex.position.x);
-    max.y = std::max(max.y, vertex.position.y);
+    min.x = std::min(min.x, vertex->getPosition().x);
+    min.y = std::min(min.y, vertex->getPosition().y);
+    max.x = std::max(max.x, vertex->getPosition().x);
+    max.y = std::max(max.y, vertex->getPosition().y);
   }
 
   float scaleX = (width - 2 * PADDING) / (max.x - min.x);
@@ -50,24 +50,23 @@ void Window::draw(const Graph &graph) {
   float offsetX = (width - (max.x - min.x) * scale) / 2.0f - min.x * scale;
   float offsetY = (height - (max.y - min.y) * scale) / 2.0f - min.y * scale;
 
-  for (size_t i = 0; i < graph.getVertices().size(); i++) {
-    const auto &vertex = graph.getVertex(i);
-    Vector2 pos1 = {vertex.position.x * scale + offsetX,
-                    vertex.position.y * scale + offsetY};
+  for (const auto &vertex : graph.getVertices()) {
+    Vector2 pos1 = {vertex->getPosition().x * scale + offsetX,
+                    vertex->getPosition().y * scale + offsetY};
 
-    for (size_t neighborId : vertex.neighbors) {
-      if (neighborId > i) {
-        const auto &neighbor = graph.getVertex(neighborId);
-        Vector2 pos2 = {neighbor.position.x * scale + offsetX,
-                        neighbor.position.y * scale + offsetY};
+    for (const auto &edge : vertex->getEdges()) {
+      auto neighbor = edge->getOtherVertex(vertex);
+      if (neighbor) {
+        Vector2 pos2 = {neighbor->getPosition().x * scale + offsetX,
+                        neighbor->getPosition().y * scale + offsetY};
         DrawLine(pos1.x, pos1.y, pos2.x, pos2.y, EDGE_COLOR);
       }
     }
   }
 
   for (const auto &vertex : graph.getVertices()) {
-    Vector2 pos = {vertex.position.x * scale + offsetX,
-                   vertex.position.y * scale + offsetY};
-    DrawCircle(pos.x, pos.y, 5.0f, vertex.color);
+    Vector2 pos = {vertex->getPosition().x * scale + offsetX,
+                   vertex->getPosition().y * scale + offsetY};
+    DrawCircle(pos.x, pos.y, 5.0f, vertex->getColor());
   }
 }

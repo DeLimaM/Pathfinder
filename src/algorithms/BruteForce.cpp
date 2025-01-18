@@ -21,9 +21,17 @@ void BruteForce::exploreNeighbors(const Graph &graph, size_t current,
                                   size_t end, std::vector<bool> &visited,
                                   std::vector<size_t> &currentPath,
                                   std::vector<size_t> &shortestPath) {
-  for (size_t neighbor : graph.getVertex(current).neighbors) {
-    if (!visited[neighbor]) {
-      exploreNode(graph, neighbor, end, visited, currentPath, shortestPath);
+  auto currentVertex = graph.getVertex(current);
+  for (const auto &edge : currentVertex->getEdges()) {
+    auto neighborVertex = edge->getOtherVertex(currentVertex);
+    auto vertices = graph.getVertices();
+    auto it = std::find(vertices.begin(), vertices.end(), neighborVertex);
+    if (it != vertices.end()) {
+      size_t neighborIndex = std::distance(vertices.begin(), it);
+      if (!visited[neighborIndex]) {
+        exploreNode(graph, neighborIndex, end, visited, currentPath,
+                    shortestPath);
+      }
     }
   }
 }

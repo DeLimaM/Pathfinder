@@ -2,7 +2,8 @@
 #include <algorithm>
 
 size_t Graph::addVertex(Vector2 position) {
-  vertices.push_back({position, {}, NODE_COLOR});
+  auto vertex = std::make_shared<Vertex>(position);
+  vertices.push_back(vertex);
   return vertices.size() - 1;
 }
 
@@ -10,8 +11,10 @@ void Graph::addEdge(size_t from, size_t to) {
   if (from >= vertices.size() || to >= vertices.size())
     return;
   if (!hasEdge(from, to)) {
-    vertices[from].neighbors.push_back(to);
-    vertices[to].neighbors.push_back(from);
+    auto edge = std::make_shared<Edge>(vertices[from], vertices[to]);
+    edges.push_back(edge);
+    vertices[from]->addEdge(edge);
+    vertices[to]->addEdge(edge);
   }
 }
 
@@ -19,52 +22,68 @@ void Graph::removeVertex(size_t id) {
   if (id >= vertices.size())
     return;
 
-  for (auto &vertex : vertices) {
-    auto &neighbors = vertex.neighbors;
-    neighbors.erase(std::remove(neighbors.begin(), neighbors.end(), id),
-                    neighbors.end());
+  auto vertex = vertices[id];
 
-    for (auto &neighbor : neighbors) {
-      if (neighbor > id) {
-        neighbor--;
+  edges.erase(std::remove_if(edges.begin(), edges.end(),
+                             [vertex](const std::shared_ptr<Edge> &edge) {
+                               return edge->getVertex1() == vertex ||
+                                      edge->getVertex2() == vertex;
+                             }),
+              edges.end());
+
+  vertices.erase(vertices.begin() + id);
+
+  for (auto &v : vertices) {
+    for (auto &e : v->getEdges()) {
+      if (auto other = e->getOtherVertex(v)) {
+        if (std::find(vertices.begin(), vertices.end(), other) ==
+            vertices.end()) {
+          v->removeEdge(e);
+        }
       }
     }
   }
-
-  vertices.erase(vertices.begin() + id);
 }
 
 void Graph::removeEdge(size_t from, size_t to) {
   if (from >= vertices.size() || to >= vertices.size())
     return;
 
-  auto &fromNeighbors = vertices[from].neighbors;
-  auto &toNeighbors = vertices[to].neighbors;
+  edges.erase(
+      std::remove_if(edges.begin(), edges.end(),
+                     [this, from, to](const std::shared_ptr<Edge> &edge) {
+                       auto v1 = edge->getVertex1();
+                       auto v2 = edge->getVertex2();
+                       return (v1 == vertices[from] && v2 == vertices[to]) ||
+                              (v1 == vertices[to] && v2 == vertices[from]);
+                     }),
+      edges.end());
 
-  fromNeighbors.erase(
-      std::remove(fromNeighbors.begin(), fromNeighbors.end(), to),
-      fromNeighbors.end());
-
-  toNeighbors.erase(std::remove(toNeighbors.begin(), toNeighbors.end(), from),
-                    toNeighbors.end());
+  vertices[from]->removeEdge(edges.back());
+  vertices[to]->removeEdge(edges.back());
 }
 
 bool Graph::hasEdge(size_t from, size_t to) const {
   if (from >= vertices.size() || to >= vertices.size())
     return false;
 
-  const auto &neighbors = vertices[from].neighbors;
-  return std::find(neighbors.begin(), neighbors.end(), to) != neighbors.end();
+  return std::any_of(edges.begin(), edges.end(),
+                     [this, from, to](const std::shared_ptr<Edge> &edge) {
+                       auto v1 = edge->getVertex1();
+                       auto v2 = edge->getVertex2();
+                       return (v1 == vertices[from] && v2 == vertices[to]) ||
+                              (v1 == vertices[to] && v2 == vertices[from]);
+                     });
 }
 
 void Graph::setVertexColor(size_t id, Color color) {
   if (id < vertices.size()) {
-    vertices[id].color = color;
+    vertices[id]->setColor(color);
   }
 }
 
 void Graph::setVertexPosition(size_t id, Vector2 position) {
   if (id < vertices.size()) {
-    vertices[id].position = position;
+    vertices[id]->setPosition(position);
   }
 }
