@@ -2,11 +2,13 @@
 #include "../graph/Graph.hpp"
 #include "./raylib.h"
 #include "Constants.hpp"
+#include <atomic>
 
 class Window {
 public:
-  Window(const Graph &graph, int width = DEFAULT_WINDOW_WIDTH,
-         int height = DEFAULT_WINDOW_HEIGHT, const char *title = WINDOW_TITLE);
+  Window(const Graph &graph, std::atomic<bool> &shouldExit,
+         int width = DEFAULT_WINDOW_WIDTH, int height = DEFAULT_WINDOW_HEIGHT,
+         const char *title = WINDOW_TITLE);
   ~Window();
   void run();
   void draw(const Graph &graph);
@@ -23,4 +25,5 @@ private:
   int width;
   int height;
   const Graph &graph;
+  std::atomic<bool> &shouldExit;
 };

@@ -40,7 +40,9 @@ void createGridGraph(Graph &graph, int rows, int cols, float spacing = 100.0f) {
 int main() {
   Dijkstra algorithm;
   Graph graph;
-  Window window = Window(graph);
+
+  std::atomic<bool> shouldExit = false;
+  Window window = Window(graph, shouldExit);
 
   const int rows = 25;
   const int cols = 25;
@@ -49,55 +51,61 @@ int main() {
   size_t start = 0;
   size_t end = (rows * cols) - 1;
 
-  algorithm.setVisualizationCallback(
-      [&graph, start, end](const std::vector<size_t> &currentPath) {
-        for (const auto &vertex : graph.getVertices()) {
-          size_t index = std::find(graph.getVertices().begin(),
-                                   graph.getVertices().end(), vertex) -
-                         graph.getVertices().begin();
-          if (index != start && index != end) {
-            vertex->setColor(NODE_COLOR);
-            for (const auto &edge : vertex->getEdges()) {
-              edge->setColor(EDGE_COLOR);
+  std::thread algorithmThread([&]() {
+    algorithm.setVisualizationCallback(
+        [&graph, start, end,
+         &shouldExit](const std::vector<size_t> &currentPath) {
+          if (shouldExit) {
+            return;
+          }
+          for (const auto &vertex : graph.getVertices()) {
+            size_t index = std::find(graph.getVertices().begin(),
+                                     graph.getVertices().end(), vertex) -
+                           graph.getVertices().begin();
+            if (index != start && index != end) {
+              vertex->setColor(NODE_COLOR);
+              for (const auto &edge : vertex->getEdges()) {
+                edge->setColor(EDGE_COLOR);
+              }
             }
           }
-        }
 
-        for (size_t i = 0; i < currentPath.size() - 1; i++) {
-          if (currentPath[i] != start && currentPath[i] != end) {
-            auto vertex = graph.getVertex(currentPath[i]);
-            vertex->setColor(PATH_COLOR);
-          }
+          for (size_t i = 0; i < currentPath.size() - 1; i++) {
+            if (currentPath[i] != start && currentPath[i] != end) {
+              auto vertex = graph.getVertex(currentPath[i]);
+              vertex->setColor(PATH_COLOR);
+            }
 
-          auto vertex1 = graph.getVertex(currentPath[i]);
-          auto vertex2 = graph.getVertex(currentPath[i + 1]);
+            auto vertex1 = graph.getVertex(currentPath[i]);
+            auto vertex2 = graph.getVertex(currentPath[i + 1]);
 
-          for (const auto &edge : vertex1->getEdges()) {
-            if (edge->getOtherVertex(vertex1) == vertex2) {
-              edge->setColor(PATH_COLOR);
-              break;
+            for (const auto &edge : vertex1->getEdges()) {
+              if (edge->getOtherVertex(vertex1) == vertex2) {
+                edge->setColor(PATH_COLOR);
+                break;
+              }
             }
           }
-        }
 
-        if (!currentPath.empty() && currentPath.back() != start &&
-            currentPath.back() != end) {
-          graph.getVertex(currentPath.back())->setColor(PATH_COLOR);
-        }
+          if (!currentPath.empty() && currentPath.back() != start &&
+              currentPath.back() != end) {
+            graph.getVertex(currentPath.back())->setColor(PATH_COLOR);
+          }
 
-        graph.getVertex(start)->setColor(START_NODE_COLOR);
-        graph.getVertex(end)->setColor(END_NODE_COLOR);
+          graph.getVertex(start)->setColor(START_NODE_COLOR);
+          graph.getVertex(end)->setColor(END_NODE_COLOR);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
-      });
+          std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
+        });
 
-  std::thread pathfindingThread([&]() {
-    std::vector<size_t> path = algorithm.findPath(graph, start, end);
+    algorithm.findPath(graph, start, end);
   });
 
   window.run();
 
-  pathfindingThread.join();
+  if (algorithmThread.joinable()) {
+    algorithmThread.join();
+  }
 
   return 0;
 }

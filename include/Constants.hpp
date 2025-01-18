@@ -8,8 +8,8 @@ constexpr const char *WINDOW_TITLE = "Pathfinder";
 const float WINDOW_PADDING = 50.0f;
 
 constexpr Color BACKGROUND_COLOR = BLACK;
-constexpr Color NODE_COLOR = WHITE;
-constexpr Color EDGE_COLOR = GRAY;
+constexpr Color NODE_COLOR = GRAY;
+constexpr Color EDGE_COLOR = DARKGRAY;
 constexpr Color START_NODE_COLOR = GREEN;
 constexpr Color END_NODE_COLOR = RED;
 constexpr Color PATH_COLOR = YELLOW;

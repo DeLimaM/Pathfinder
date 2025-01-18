@@ -2,8 +2,9 @@
 #include "graph/Graph.hpp"
 #include <cstddef>
 
-Window::Window(const Graph &graph, int width, int height, const char *title)
-    : width(width), height(height), graph(graph) {
+Window::Window(const Graph &graph, std::atomic<bool> &shouldExit, int width,
+               int height, const char *title)
+    : width(width), height(height), graph(graph), shouldExit(shouldExit) {
   SetConfigFlags(FLAG_WINDOW_RESIZABLE);
   InitWindow(width, height, title);
   SetTargetFPS(TARGET_FPS);
@@ -20,6 +21,7 @@ void Window::run() {
     draw(graph);
     EndDrawing();
   }
+  shouldExit = true;
 }
 
 void Window::handleEvents() {
