@@ -33,8 +33,57 @@ void createGridGraph(Graph &graph, int rows, int cols, float spacing = 100.0f) {
     }
   }
 
-  graph.setVertexColor(vertices[0], START_NODE_COLOR);
-  graph.setVertexColor(vertices[vertices.size() - 1], END_NODE_COLOR);
+  graph.getVertex(vertices[0])->setColor(START_NODE_COLOR);
+  graph.getVertex(vertices[vertices.size() - 1])->setColor(END_NODE_COLOR);
 }
 
-int main() { return 0; }
+int main() {
+  Window window = Window();
+  BruteForce algorithm;
+  Graph graph;
+
+  const int rows = 10;
+  const int cols = 10;
+  createGridGraph(graph, rows, cols);
+
+  size_t start = 0;
+  size_t end = (rows * cols) - 1;
+
+  algorithm.setVisualizationCallback(
+      [&graph, start, end](const std::vector<size_t> &currentPath) {
+        for (const auto &vertex : graph.getVertices()) {
+          size_t index = std::find(graph.getVertices().begin(),
+                                   graph.getVertices().end(), vertex) -
+                         graph.getVertices().begin();
+          if (index != start && index != end) {
+            vertex->setColor(NODE_COLOR);
+          }
+        }
+
+        for (size_t i = 0; i < currentPath.size(); i++) {
+          if (currentPath[i] != start && currentPath[i] != end) {
+            auto vertex = graph.getVertex(currentPath[i]);
+            vertex->setColor(PATH_COLOR);
+          }
+        }
+
+        graph.getVertex(start)->setColor(START_NODE_COLOR);
+        graph.getVertex(end)->setColor(END_NODE_COLOR);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      });
+
+  std::thread pathfindingThread([&]() {
+    std::vector<size_t> path = algorithm.findPath(graph, start, end);
+  });
+
+  while (!window.shouldClose()) {
+    window.clear();
+    window.draw(graph);
+    window.display();
+  }
+
+  pathfindingThread.join();
+
+  return 0;
+}

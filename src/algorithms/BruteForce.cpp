@@ -7,6 +7,9 @@ void BruteForce::exploreNode(const Graph &graph, size_t current, size_t end,
   visited[current] = true;
   currentPath.push_back(current);
 
+  if (visualCallback)
+    visualCallback(currentPath);
+
   if (current == end) {
     updateShortestPath(currentPath, shortestPath);
   } else {

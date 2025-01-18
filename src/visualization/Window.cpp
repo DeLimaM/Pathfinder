@@ -43,8 +43,8 @@ void Window::draw(const Graph &graph) {
     max.y = std::max(max.y, vertex->getPosition().y);
   }
 
-  float scaleX = (width - 2 * PADDING) / (max.x - min.x);
-  float scaleY = (height - 2 * PADDING) / (max.y - min.y);
+  float scaleX = (width - 2 * WINDOW_PADDING) / (max.x - min.x);
+  float scaleY = (height - 2 * WINDOW_PADDING) / (max.y - min.y);
   float scale = std::min(scaleX, scaleY);
 
   float offsetX = (width - (max.x - min.x) * scale) / 2.0f - min.x * scale;
@@ -67,6 +67,11 @@ void Window::draw(const Graph &graph) {
   for (const auto &vertex : graph.getVertices()) {
     Vector2 pos = {vertex->getPosition().x * scale + offsetX,
                    vertex->getPosition().y * scale + offsetY};
-    DrawCircle(pos.x, pos.y, 5.0f, vertex->getColor());
+    float radius =
+        ColorToInt(vertex->getColor()) == ColorToInt(START_NODE_COLOR) ||
+                ColorToInt(vertex->getColor()) == ColorToInt(END_NODE_COLOR)
+            ? START_END_NODE_RADIUS
+            : BASE_NODE_RADIUS;
+    DrawCircle(pos.x, pos.y, radius, vertex->getColor());
   }
 }

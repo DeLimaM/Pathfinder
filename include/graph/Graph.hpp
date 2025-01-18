@@ -21,9 +21,6 @@ public:
   std::shared_ptr<Vertex> getVertex(size_t id) const { return vertices[id]; }
   bool hasEdge(size_t from, size_t to) const;
 
-  void setVertexColor(size_t id, Color color);
-  void setVertexPosition(size_t id, Vector2 position);
-
 private:
   std::vector<std::shared_ptr<Vertex>> vertices;
   std::vector<std::shared_ptr<Edge>> edges;

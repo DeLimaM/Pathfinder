@@ -75,15 +75,3 @@ bool Graph::hasEdge(size_t from, size_t to) const {
                               (v1 == vertices[to] && v2 == vertices[from]);
                      });
 }
-
-void Graph::setVertexColor(size_t id, Color color) {
-  if (id < vertices.size()) {
-    vertices[id]->setColor(color);
-  }
-}
-
-void Graph::setVertexPosition(size_t id, Vector2 position) {
-  if (id < vertices.size()) {
-    vertices[id]->setPosition(position);
-  }
-}
