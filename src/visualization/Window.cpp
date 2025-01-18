@@ -61,7 +61,7 @@ void Window::draw(const Graph &graph) {
       if (neighbor) {
         Vector2 pos2 = {neighbor->getPosition().x * scale + offsetX,
                         neighbor->getPosition().y * scale + offsetY};
-        DrawLine(pos1.x, pos1.y, pos2.x, pos2.y, EDGE_COLOR);
+        DrawLine(pos1.x, pos1.y, pos2.x, pos2.y, edge->getColor());
       }
     }
   }

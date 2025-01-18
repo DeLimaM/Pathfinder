@@ -57,14 +57,32 @@ int main() {
                          graph.getVertices().begin();
           if (index != start && index != end) {
             vertex->setColor(NODE_COLOR);
+            for (const auto &edge : vertex->getEdges()) {
+              edge->setColor(EDGE_COLOR);
+            }
           }
         }
 
-        for (size_t i = 0; i < currentPath.size(); i++) {
+        for (size_t i = 0; i < currentPath.size() - 1; i++) {
           if (currentPath[i] != start && currentPath[i] != end) {
             auto vertex = graph.getVertex(currentPath[i]);
             vertex->setColor(PATH_COLOR);
           }
+
+          auto vertex1 = graph.getVertex(currentPath[i]);
+          auto vertex2 = graph.getVertex(currentPath[i + 1]);
+
+          for (const auto &edge : vertex1->getEdges()) {
+            if (edge->getOtherVertex(vertex1) == vertex2) {
+              edge->setColor(PATH_COLOR);
+              break;
+            }
+          }
+        }
+
+        if (!currentPath.empty() && currentPath.back() != start &&
+            currentPath.back() != end) {
+          graph.getVertex(currentPath.back())->setColor(PATH_COLOR);
         }
 
         graph.getVertex(start)->setColor(START_NODE_COLOR);
