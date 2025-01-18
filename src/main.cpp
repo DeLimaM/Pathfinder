@@ -1,5 +1,5 @@
 #include "Constants.hpp"
-#include "algorithms/BruteForce.hpp"
+#include "algorithms/Dijkstra.hpp"
 #include "graph/Graph.hpp"
 #include "visualization/Window.hpp"
 #include <atomic>
@@ -39,11 +39,11 @@ void createGridGraph(Graph &graph, int rows, int cols, float spacing = 100.0f) {
 
 int main() {
   Window window = Window();
-  BruteForce algorithm;
+  Dijkstra algorithm;
   Graph graph;
 
-  const int rows = 10;
-  const int cols = 10;
+  const int rows = 25;
+  const int cols = 25;
   createGridGraph(graph, rows, cols);
 
   size_t start = 0;
@@ -70,7 +70,7 @@ int main() {
         graph.getVertex(start)->setColor(START_NODE_COLOR);
         graph.getVertex(end)->setColor(END_NODE_COLOR);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
       });
 
   std::thread pathfindingThread([&]() {
