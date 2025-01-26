@@ -7,7 +7,7 @@
 #include <set>
 #include <stdexcept>
 
-void createRandomGraph(Graph &graph, size_t vertices, size_t edges) {
+void createRandomGraph(Graph &graph, size_t vertices) {
   if (vertices < 2)
     return;
 
@@ -15,7 +15,6 @@ void createRandomGraph(Graph &graph, size_t vertices, size_t edges) {
   std::mt19937 gen(rd());
 
   float centerY = DEFAULT_WINDOW_HEIGHT / 2.0f;
-
   float leftX = WINDOW_PADDING * 2;
   float rightX = DEFAULT_WINDOW_WIDTH - WINDOW_PADDING * 2;
   float midMinX = WINDOW_PADDING * 3;
@@ -24,6 +23,7 @@ void createRandomGraph(Graph &graph, size_t vertices, size_t edges) {
   // start vertex
   graph.addVertex(Vector2{leftX, centerY});
 
+  // middle vertices
   std::uniform_real_distribution<float> xDist(midMinX, midMaxX);
   std::uniform_real_distribution<float> yDist(
       WINDOW_PADDING, DEFAULT_WINDOW_HEIGHT - WINDOW_PADDING);
@@ -37,21 +37,22 @@ void createRandomGraph(Graph &graph, size_t vertices, size_t edges) {
   // end vertex
   graph.addVertex(Vector2{rightX, centerY});
 
-  // path from start to end
   for (size_t i = 0; i < vertices - 1; i++) {
     graph.addEdge(i, i + 1);
   }
 
+  // add random edges
   std::uniform_int_distribution<size_t> vertexDist(0, vertices - 1);
-  size_t remainingEdges = edges - (vertices - 1);
+  std::uniform_int_distribution<size_t> extraEdgesDist(vertices / 4,
+                                                       vertices / 2);
+  size_t extraEdges = extraEdgesDist(gen);
 
-  while (remainingEdges > 0) {
+  for (size_t i = 0; i < extraEdges; i++) {
     size_t from = vertexDist(gen);
     size_t to = vertexDist(gen);
 
     if (from != to && !graph.hasEdge(from, to)) {
       graph.addEdge(from, to);
-      remainingEdges--;
     }
   }
 }
@@ -88,9 +89,8 @@ int main() {
   Graph graph;
   std::atomic<bool> shouldExit = false;
 
-  const size_t vertices = 64;
-  const size_t edges = 96;
-  createRandomGraph(graph, vertices, edges);
+  const size_t vertices = 1024;
+  createRandomGraph(graph, vertices);
 
   size_t start = 0;
   size_t end = vertices - 1;
