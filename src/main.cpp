@@ -8,34 +8,50 @@
 #include <stdexcept>
 
 void createRandomGraph(Graph &graph, size_t vertices, size_t edges) {
-  size_t maxEdges = (vertices * (vertices - 1)) / 2;
-
-  if (edges > maxEdges) {
-    throw std::invalid_argument("Too many edges for given vertices");
-  }
+  if (vertices < 2)
+    return;
 
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_real_distribution<float> posDist(
-      WINDOW_PADDING, DEFAULT_WINDOW_WIDTH - WINDOW_PADDING);
-  std::uniform_int_distribution<size_t> dis(0, vertices - 1);
 
-  std::set<std::pair<size_t, size_t>> addedEdges;
+  float centerY = DEFAULT_WINDOW_HEIGHT / 2.0f;
 
-  for (size_t i = 0; i < vertices; i++) {
-    Vector2 position = {posDist(gen), posDist(gen)};
-    graph.addVertex(position);
+  float leftX = WINDOW_PADDING * 2;
+  float rightX = DEFAULT_WINDOW_WIDTH - WINDOW_PADDING * 2;
+  float midMinX = WINDOW_PADDING * 3;
+  float midMaxX = DEFAULT_WINDOW_WIDTH - WINDOW_PADDING * 3;
+
+  // start vertex
+  graph.addVertex(Vector2{leftX, centerY});
+
+  std::uniform_real_distribution<float> xDist(midMinX, midMaxX);
+  std::uniform_real_distribution<float> yDist(
+      WINDOW_PADDING, DEFAULT_WINDOW_HEIGHT - WINDOW_PADDING);
+
+  for (size_t i = 1; i < vertices - 1; i++) {
+    float x = xDist(gen);
+    float y = yDist(gen);
+    graph.addVertex(Vector2{x, y});
   }
 
-  while (addedEdges.size() < edges) {
-    size_t from = dis(gen);
-    size_t to = dis(gen);
+  // end vertex
+  graph.addVertex(Vector2{rightX, centerY});
 
-    if (from != to) {
-      auto edge = std::minmax(from, to);
-      if (addedEdges.insert(edge).second) {
-        graph.addEdge(from, to);
-      }
+  // path from start to end
+  for (size_t i = 0; i < vertices - 1; i++) {
+    graph.addEdge(i, i + 1);
+  }
+
+  std::uniform_int_distribution<size_t> vertexDist(0, vertices - 1);
+  size_t remainingEdges = edges - (vertices - 1);
+
+  while (remainingEdges > 0) {
+    size_t from = vertexDist(gen);
+    size_t to = vertexDist(gen);
+
+    if (from != to && !graph.hasEdge(from, to)) {
+      graph.addEdge(from, to);
+      remainingEdges--;
     }
   }
 }
@@ -72,8 +88,8 @@ int main() {
   Graph graph;
   std::atomic<bool> shouldExit = false;
 
-  const size_t vertices = 20;
-  const size_t edges = 40;
+  const size_t vertices = 64;
+  const size_t edges = 96;
   createRandomGraph(graph, vertices, edges);
 
   size_t start = 0;
