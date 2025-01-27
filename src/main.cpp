@@ -16,10 +16,10 @@ void createRandomGraph(Graph &graph, size_t vertices) {
   std::mt19937 gen(rd());
 
   float centerY = DEFAULT_WINDOW_HEIGHT / 2.0f;
-  float leftX = WINDOW_PADDING * 2;
-  float rightX = DEFAULT_WINDOW_WIDTH - WINDOW_PADDING * 2;
-  float midMinX = WINDOW_PADDING * 3;
-  float midMaxX = DEFAULT_WINDOW_WIDTH - WINDOW_PADDING * 3;
+  float leftX = WINDOW_PADDING;
+  float rightX = DEFAULT_WINDOW_WIDTH - WINDOW_PADDING;
+  float midMinX = WINDOW_PADDING * 2;
+  float midMaxX = DEFAULT_WINDOW_WIDTH - WINDOW_PADDING * 2;
 
   // start vertex
   graph.addVertex(Vector2{leftX, centerY});
@@ -61,12 +61,10 @@ void createRandomGraph(Graph &graph, size_t vertices) {
 void createGridGraph(Graph &graph, int rows, int cols) {
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      float x =
-          WINDOW_PADDING +
-          (j * ((DEFAULT_WINDOW_WIDTH - 2 * WINDOW_PADDING) / (cols - 1)));
-      float y =
-          WINDOW_PADDING +
-          (i * ((DEFAULT_WINDOW_HEIGHT - 2 * WINDOW_PADDING) / (rows - 1)));
+      float x = WINDOW_PADDING +
+                (j * ((DEFAULT_WINDOW_WIDTH - WINDOW_PADDING) / (cols - 1)));
+      float y = WINDOW_PADDING +
+                (i * ((DEFAULT_WINDOW_HEIGHT - WINDOW_PADDING) / (rows - 1)));
       graph.addVertex(Vector2{x, y});
     }
   }
@@ -90,13 +88,13 @@ int main() {
   Graph graph;
   std::atomic<bool> shouldExit = false;
 
-  const size_t vertices = 128;
+  const size_t vertices = 256;
   createRandomGraph(graph, vertices);
 
   size_t start = 0;
   size_t end = vertices - 1;
 
-  AStar algorithm;
+  Dijkstra algorithm;
   PathfindingVisualizer visualizer(graph, shouldExit, start, end);
   visualizer.run(algorithm);
 
