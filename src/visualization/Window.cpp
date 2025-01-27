@@ -32,6 +32,10 @@ void Window::handleEvents() {
     width = newWidth;
     height = newHeight;
   }
+
+  if (IsKeyPressed(KEY_SPACE)) {
+    *isPaused = !(*isPaused);
+  }
 }
 
 void Window::draw(const Graph &graph) {
@@ -47,6 +51,8 @@ void Window::draw(const Graph &graph) {
 
   drawEdges(graph, scale, offsetX, offsetY);
   drawVertices(graph, scale, offsetX, offsetY);
+
+  DrawFPS(10, 10);
 }
 
 Vector2 Window::calculateBounds(const Graph &graph, Vector2 &min,

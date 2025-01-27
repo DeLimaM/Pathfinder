@@ -87,6 +87,7 @@ void createGridGraph(Graph &graph, int rows, int cols) {
 int main() {
   Graph graph;
   std::atomic<bool> shouldExit = false;
+  std::atomic<bool> isPaused = true;
 
   const size_t vertices = 256;
   createRandomGraph(graph, vertices);
@@ -96,6 +97,9 @@ int main() {
 
   Dijkstra algorithm;
   PathfindingVisualizer visualizer(graph, shouldExit, start, end);
+
+  visualizer.setPauseState(&isPaused);
+
   visualizer.run(algorithm);
 
   return 0;

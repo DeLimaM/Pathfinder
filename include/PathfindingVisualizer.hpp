@@ -16,6 +16,7 @@ private:
   size_t start;
   size_t end;
   std::atomic<bool> &shouldExit;
+  std::atomic<bool> *isPaused;
   Window window;
 
 public:
@@ -24,6 +25,7 @@ public:
 
   void visualizePath(const std::vector<size_t> &currentPath);
   void run(PathfindingAlgorithm &algorithm);
+  void setPauseState(std::atomic<bool> *pauseState);
 
 private:
   void resetColors();

@@ -20,6 +20,7 @@ public:
   void display() { EndDrawing(); }
   void handleEvents();
   void setTargetFPS(int fps) { SetTargetFPS(fps); }
+  void setPauseState(std::atomic<bool> *pauseState) { isPaused = pauseState; }
 
 private:
   Vector2 calculateBounds(const Graph &graph, Vector2 &min, Vector2 &max);
@@ -35,4 +36,5 @@ private:
   int height;
   const Graph &graph;
   std::atomic<bool> &shouldExit;
+  std::atomic<bool> *isPaused;
 };

@@ -21,6 +21,10 @@ void PathfindingVisualizer::visualizePath(
   if (shouldExit)
     return;
 
+  while (*isPaused && !shouldExit) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
+  }
+
   resetColors();
   updatePathColors(currentPath);
   updateEndpointColors();
@@ -40,6 +44,11 @@ void PathfindingVisualizer::run(PathfindingAlgorithm &algorithm) {
   if (algorithmThread.joinable()) {
     algorithmThread.join();
   }
+}
+
+void PathfindingVisualizer::setPauseState(std::atomic<bool> *pauseState) {
+  isPaused = pauseState;
+  window.setPauseState(pauseState);
 }
 
 void PathfindingVisualizer::resetColors() {
