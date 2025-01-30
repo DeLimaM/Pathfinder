@@ -89,13 +89,13 @@ int main() {
   std::atomic<bool> shouldExit = false;
   std::atomic<bool> isPaused = true;
 
-  const size_t vertices = 256;
+  const size_t vertices = 4096;
   createRandomGraph(graph, vertices);
 
   size_t start = 0;
   size_t end = vertices - 1;
 
-  Dijkstra algorithm;
+  AStar algorithm;
   PathfindingVisualizer visualizer(graph, shouldExit, start, end);
 
   visualizer.setPauseState(&isPaused);

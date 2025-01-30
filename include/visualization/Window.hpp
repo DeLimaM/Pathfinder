@@ -25,7 +25,8 @@ public:
 private:
   Vector2 calculateBounds(const Graph &graph, Vector2 &min, Vector2 &max);
   float calculateScale(const Vector2 &min, const Vector2 &max);
-  void drawEdges(const Graph &graph, float scale, float offsetX, float offsetY);
+  void drawEdges(const Graph &graph, float scale, float offsetX, float offsetY,
+                 Color filterColor);
   void drawVertices(const Graph &graph, float scale, float offsetX,
                     float offsetY);
   Vector2 transformPosition(const Vector2 &pos, float scale, float offsetX,

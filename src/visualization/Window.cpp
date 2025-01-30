@@ -49,8 +49,9 @@ void Window::draw(const Graph &graph) {
   float offsetX = (width - (max.x - min.x) * scale) / 2.0f - min.x * scale;
   float offsetY = (height - (max.y - min.y) * scale) / 2.0f - min.y * scale;
 
-  drawEdges(graph, scale, offsetX, offsetY);
+  drawEdges(graph, scale, offsetX, offsetY, EDGE_COLOR);
   drawVertices(graph, scale, offsetX, offsetY);
+  drawEdges(graph, scale, offsetX, offsetY, PATH_COLOR);
 
   DrawFPS(10, 10);
 }
@@ -81,17 +82,21 @@ Vector2 Window::transformPosition(const Vector2 &pos, float scale,
 }
 
 void Window::drawEdges(const Graph &graph, float scale, float offsetX,
-                       float offsetY) {
+                       float offsetY, Color filterColor) {
   for (const auto &vertex : graph.getVertices()) {
     Vector2 pos1 =
         transformPosition(vertex->getPosition(), scale, offsetX, offsetY);
 
     for (const auto &edge : vertex->getEdges()) {
-      auto neighbor = edge->getOtherVertex(vertex);
-      if (neighbor) {
-        Vector2 pos2 =
-            transformPosition(neighbor->getPosition(), scale, offsetX, offsetY);
-        DrawLine(pos1.x, pos1.y, pos2.x, pos2.y, edge->getColor());
+      if (edge->getColor().r == filterColor.r &&
+          edge->getColor().g == filterColor.g &&
+          edge->getColor().b == filterColor.b) {
+        auto neighbor = edge->getOtherVertex(vertex);
+        if (neighbor) {
+          Vector2 pos2 = transformPosition(neighbor->getPosition(), scale,
+                                           offsetX, offsetY);
+          DrawLine(pos1.x, pos1.y, pos2.x, pos2.y, edge->getColor());
+        }
       }
     }
   }
