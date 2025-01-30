@@ -5,7 +5,7 @@
 Window::Window(const Graph &graph, std::atomic<bool> &shouldExit, int width,
                int height, const char *title)
     : width(width), height(height), graph(graph), shouldExit(shouldExit) {
-  SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
+  SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT);
   InitWindow(width, height, title);
   SetTargetFPS(TARGET_FPS);
 

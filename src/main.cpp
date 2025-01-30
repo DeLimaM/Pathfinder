@@ -12,74 +12,57 @@ void createRandomGraph(Graph &graph, size_t vertices) {
   if (vertices < 2)
     return;
 
+  size_t gridWidth = static_cast<size_t>(std::sqrt(vertices));
+  size_t gridHeight = (vertices + gridWidth - 1) / gridWidth;
+
+  float cellWidth =
+      (DEFAULT_WINDOW_WIDTH - 2 * WINDOW_PADDING) / (gridWidth - 1);
+  float cellHeight =
+      (DEFAULT_WINDOW_HEIGHT - 2 * WINDOW_PADDING) / (gridHeight - 1);
+
   std::random_device rd;
   std::mt19937 gen(rd());
 
-  float centerY = DEFAULT_WINDOW_HEIGHT / 2.0f;
-  float leftX = WINDOW_PADDING;
-  float rightX = DEFAULT_WINDOW_WIDTH - WINDOW_PADDING;
-  float midMinX = WINDOW_PADDING * 2;
-  float midMaxX = DEFAULT_WINDOW_WIDTH - WINDOW_PADDING * 2;
+  for (size_t y = 0; y < gridHeight; y++) {
+    for (size_t x = 0; x < gridWidth; x++) {
+      if (y * gridWidth + x >= vertices)
+        break;
 
-  // start vertex
-  graph.addVertex(Vector2{leftX, centerY});
+      float posX = WINDOW_PADDING + x * cellWidth;
+      float posY = WINDOW_PADDING + y * cellHeight;
 
-  // middle vertices
-  std::uniform_real_distribution<float> xDist(midMinX, midMaxX);
-  std::uniform_real_distribution<float> yDist(
-      WINDOW_PADDING, DEFAULT_WINDOW_HEIGHT - WINDOW_PADDING);
+      std::uniform_real_distribution<float> offset(-cellWidth / 4,
+                                                   cellWidth / 4);
+      posX += offset(gen);
+      posY += offset(gen);
 
-  for (size_t i = 1; i < vertices - 1; i++) {
-    float x = xDist(gen);
-    float y = yDist(gen);
-    graph.addVertex(Vector2{x, y});
-  }
+      size_t index = y * gridWidth + x;
+      Vector2 position = {posX, posY};
 
-  // end vertex
-  graph.addVertex(Vector2{rightX, centerY});
-
-  for (size_t i = 0; i < vertices - 1; i++) {
-    graph.addEdge(i, i + 1);
-  }
-
-  // add random edges
-  std::uniform_int_distribution<size_t> vertexDist(0, vertices - 1);
-  std::uniform_int_distribution<size_t> extraEdgesDist(vertices / 4,
-                                                       vertices / 2);
-  size_t extraEdges = extraEdgesDist(gen);
-
-  for (size_t i = 0; i < extraEdges; i++) {
-    size_t from = vertexDist(gen);
-    size_t to = vertexDist(gen);
-
-    if (from != to && !graph.hasEdge(from, to)) {
-      graph.addEdge(from, to);
-    }
-  }
-}
-
-void createGridGraph(Graph &graph, int rows, int cols) {
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      float x = WINDOW_PADDING +
-                (j * ((DEFAULT_WINDOW_WIDTH - WINDOW_PADDING) / (cols - 1)));
-      float y = WINDOW_PADDING +
-                (i * ((DEFAULT_WINDOW_HEIGHT - WINDOW_PADDING) / (rows - 1)));
-      graph.addVertex(Vector2{x, y});
+      size_t vertexId = graph.addVertex(position);
+      if (index == 0) {
+        graph.getVertex(vertexId)->setColor(START_NODE_COLOR);
+      } else if (index == vertices - 1) {
+        graph.getVertex(vertexId)->setColor(END_NODE_COLOR);
+      }
     }
   }
 
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      size_t current = i * cols + j;
+  for (size_t i = 0; i < vertices; i++) {
+    size_t x = i % gridWidth;
+    size_t y = i / gridWidth;
 
-      if (j < cols - 1) {
-        graph.addEdge(current, current + 1);
-      }
+    if (x < gridWidth - 1 && i + 1 < vertices)
+      graph.addEdge(i, i + 1);
 
-      if (i < rows - 1) {
-        graph.addEdge(current, current + cols);
-      }
+    if (y < gridHeight - 1 && i + gridWidth < vertices)
+      graph.addEdge(i, i + gridWidth);
+
+    std::uniform_real_distribution<float> chance(0, 1);
+    if (chance(gen) < 0.3) {
+      if (x < gridWidth - 1 && y < gridHeight - 1 &&
+          i + gridWidth + 1 < vertices)
+        graph.addEdge(i, i + gridWidth + 1);
     }
   }
 }
@@ -89,13 +72,13 @@ int main() {
   std::atomic<bool> shouldExit = false;
   std::atomic<bool> isPaused = true;
 
-  const size_t vertices = 4096;
+  const size_t vertices = DEFAULT_VERTICES;
   createRandomGraph(graph, vertices);
 
   size_t start = 0;
   size_t end = vertices - 1;
 
-  AStar algorithm;
+  Dijkstra algorithm;
   PathfindingVisualizer visualizer(graph, shouldExit, start, end);
 
   visualizer.setPauseState(&isPaused);
