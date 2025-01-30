@@ -21,6 +21,7 @@ public:
   void handleEvents();
   void setTargetFPS(int fps) { SetTargetFPS(fps); }
   void setPauseState(std::atomic<bool> *pauseState) { isPaused = pauseState; }
+  void invalidateStaticCache() { needsStaticRedraw = true; }
 
 private:
   Vector2 calculateBounds(const Graph &graph, Vector2 &min, Vector2 &max);
@@ -31,6 +32,9 @@ private:
                     float offsetY);
   Vector2 transformPosition(const Vector2 &pos, float scale, float offsetX,
                             float offsetY);
+  void drawStaticElements(float scale, float offsetX, float offsetY);
+  void drawPathVertices(const Graph &graph, float scale, float offsetX,
+                        float offsetY);
 
 private:
   int width;
@@ -38,4 +42,6 @@ private:
   const Graph &graph;
   std::atomic<bool> &shouldExit;
   std::atomic<bool> *isPaused;
+  RenderTexture2D staticBackground;
+  bool needsStaticRedraw;
 };

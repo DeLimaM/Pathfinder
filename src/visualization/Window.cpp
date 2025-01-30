@@ -5,12 +5,18 @@
 Window::Window(const Graph &graph, std::atomic<bool> &shouldExit, int width,
                int height, const char *title)
     : width(width), height(height), graph(graph), shouldExit(shouldExit) {
-  SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+  SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
   InitWindow(width, height, title);
   SetTargetFPS(TARGET_FPS);
+
+  staticBackground = LoadRenderTexture(width, height);
+  needsStaticRedraw = true;
 }
 
-Window::~Window() { CloseWindow(); }
+Window::~Window() {
+  UnloadRenderTexture(staticBackground);
+  CloseWindow();
+}
 
 void Window::run() {
   while (!WindowShouldClose()) {
@@ -31,6 +37,10 @@ void Window::handleEvents() {
   if (newWidth != width || newHeight != height) {
     width = newWidth;
     height = newHeight;
+
+    UnloadRenderTexture(staticBackground);
+    staticBackground = LoadRenderTexture(width, height);
+    needsStaticRedraw = true;
   }
 
   if (IsKeyPressed(KEY_SPACE)) {
@@ -44,14 +54,19 @@ void Window::draw(const Graph &graph) {
 
   Vector2 min, max;
   calculateBounds(graph, min, max);
-
   float scale = calculateScale(min, max);
   float offsetX = (width - (max.x - min.x) * scale) / 2.0f - min.x * scale;
   float offsetY = (height - (max.y - min.y) * scale) / 2.0f - min.y * scale;
 
-  drawEdges(graph, scale, offsetX, offsetY, EDGE_COLOR);
-  drawVertices(graph, scale, offsetX, offsetY);
+  drawStaticElements(scale, offsetX, offsetY);
+  Rectangle sourceRec = {0.0f, 0.0f, (float)width, (float)-height};
+  Vector2 position = {0.0f, 0.0f};
+  DrawTextureRec(staticBackground.texture, sourceRec, position, WHITE);
+
+  BeginBlendMode(BLEND_ALPHA);
   drawEdges(graph, scale, offsetX, offsetY, PATH_COLOR);
+  drawPathVertices(graph, scale, offsetX, offsetY);
+  EndBlendMode();
 
   DrawFPS(10, 10);
 }
@@ -113,5 +128,44 @@ void Window::drawVertices(const Graph &graph, float scale, float offsetX,
             ? START_END_NODE_RADIUS
             : BASE_NODE_RADIUS;
     DrawCircle(pos.x, pos.y, radius, vertex->getColor());
+  }
+}
+
+void Window::drawStaticElements(float scale, float offsetX, float offsetY) {
+  if (!needsStaticRedraw)
+    return;
+
+  BeginTextureMode(staticBackground);
+  ClearBackground(BACKGROUND_COLOR);
+
+  drawEdges(graph, scale, offsetX, offsetY, EDGE_COLOR);
+
+  for (const auto &vertex : graph.getVertices()) {
+    Vector2 pos =
+        transformPosition(vertex->getPosition(), scale, offsetX, offsetY);
+    Color color = vertex->getColor();
+
+    if (ColorToInt(color) != ColorToInt(PATH_COLOR)) {
+      float radius = (ColorToInt(color) == ColorToInt(START_NODE_COLOR) ||
+                      ColorToInt(color) == ColorToInt(END_NODE_COLOR))
+                         ? START_END_NODE_RADIUS
+                         : BASE_NODE_RADIUS;
+
+      DrawCircle(pos.x, pos.y, radius, color);
+    }
+  }
+  EndTextureMode();
+
+  needsStaticRedraw = false;
+}
+
+void Window::drawPathVertices(const Graph &graph, float scale, float offsetX,
+                              float offsetY) {
+  for (const auto &vertex : graph.getVertices()) {
+    if (ColorToInt(vertex->getColor()) == ColorToInt(PATH_COLOR)) {
+      Vector2 pos =
+          transformPosition(vertex->getPosition(), scale, offsetX, offsetY);
+      DrawCircle(pos.x, pos.y, BASE_NODE_RADIUS, PATH_COLOR);
+    }
   }
 }
