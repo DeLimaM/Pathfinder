@@ -2,6 +2,7 @@
 #include "Constants.hpp"
 #include "algorithms/PathfindingAlgorithm.hpp"
 #include "graph/Graph.hpp"
+#include "utils/utils.hpp"
 #include "visualization/Window.hpp"
 #include <algorithm>
 #include <atomic>
@@ -30,6 +31,15 @@ void PathfindingVisualizer::visualizePath(
   updateEndpointColors();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
+}
+
+void PathfindingVisualizer::generateGraph(size_t vertices) {
+  window.clear();
+  DrawText("Generating graph...", DEFAULT_WINDOW_WIDTH / 2 - 100,
+           DEFAULT_WINDOW_HEIGHT / 2, 30, WHITE);
+  window.display();
+
+  createRandomGraph(graph, vertices);
 }
 
 void PathfindingVisualizer::run(PathfindingAlgorithm &algorithm) {
