@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <cmath>
 #include <cstddef>
 #include <thread>
 #include <vector>
@@ -34,12 +35,34 @@ void PathfindingVisualizer::visualizePath(
 }
 
 void PathfindingVisualizer::generateGraph(size_t vertices) {
-  window.clear();
-  DrawText("Generating graph...", DEFAULT_WINDOW_WIDTH / 2 - 100,
-           DEFAULT_WINDOW_HEIGHT / 2, 30, WHITE);
-  window.display();
+  std::atomic<bool> generationComplete = false;
+  float angle = 0.0f;
 
-  createRandomGraph(graph, vertices);
+  std::thread genThread([&]() {
+    createRandomGraph(graph, vertices);
+    generationComplete = true;
+  });
+
+  while (!generationComplete && !shouldExit) {
+    window.clear();
+
+    int centerX = GetScreenWidth() / 2;
+    int centerY = GetScreenHeight() / 2;
+
+    float radius = 40.0f;
+    Vector2 center = {static_cast<float>(centerX), static_cast<float>(centerY)};
+    Vector2 end = {center.x + radius * cosf(angle),
+                   center.y + radius * sinf(angle)};
+    DrawLineEx(center, end, 2.0f, WHITE);
+
+    angle += 0.1f;
+
+    window.display();
+    window.handleEvents();
+  }
+
+  genThread.join();
+  window.invalidateStaticCache();
 }
 
 void PathfindingVisualizer::run(PathfindingAlgorithm &algorithm) {
