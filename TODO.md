@@ -1,6 +1,6 @@
 # TODO :
 
-- fix path blinking on large graphs
+- ~~fix path blinking on large graphs~~
 - add stats on final path found
 - add algorithms
 - add transitions path drawing

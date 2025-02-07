@@ -27,9 +27,24 @@ void PathfindingVisualizer::visualizePath(
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
   }
 
-  resetColors();
+  static std::vector<size_t> previousPath;
+
+  for (size_t node : previousPath) {
+    if (std::find(currentPath.begin(), currentPath.end(), node) ==
+            currentPath.end() &&
+        node != start && node != end) {
+      graph.getVertex(node)->setColor(NODE_COLOR);
+      auto vertex = graph.getVertex(node);
+      for (const auto &edge : vertex->getEdges()) {
+        edge->setColor(EDGE_COLOR);
+      }
+    }
+  }
+
   updatePathColors(currentPath);
   updateEndpointColors();
+
+  previousPath = currentPath;
 
   std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
 }
