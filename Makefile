@@ -17,7 +17,7 @@ all: build
 
 restart: rebuild
 	@echo "\nRunning pathfinder..."
-	./$(TARGET)
+	./$(TARGET) --algorithm dijkstra
 
 build: create_dirs $(TARGET)
 
