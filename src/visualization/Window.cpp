@@ -171,10 +171,17 @@ void Window::drawPathVertices(const Graph &graph, float scale, float offsetX,
 }
 
 void Window::drawLoadingScreen(const char *status, float progress) {
+  int newWidth = GetScreenWidth();
+  int newHeight = GetScreenHeight();
+
+  if (newWidth != width || newHeight != height) {
+    width = newWidth;
+    height = newHeight;
+  }
+
   clear();
   drawProgressBar(status, progress);
   display();
-  handleEvents();
 }
 
 void Window::drawProgressBar(const char *status, float progress) {

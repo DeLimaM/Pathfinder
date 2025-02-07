@@ -69,10 +69,17 @@ void PathfindingVisualizer::generateGraph(size_t vertices, Graph &graph) {
   });
 
   while (!generationComplete && !shouldExit) {
+    window.handleEvents();
+    if (window.shouldClose()) {
+      shouldExit = true;
+      break;
+    }
     window.drawLoadingScreen(status.load(), progress.load());
   }
 
-  genThread.join();
+  if (genThread.joinable()) {
+    genThread.join();
+  }
   window.invalidateStaticCache();
 
   std::cout << "  [DEBUG] Graph generation took " << elapsed_time.count() * 1000
