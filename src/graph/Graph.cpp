@@ -92,9 +92,6 @@ void Graph::addEdgesBulk(
     const std::vector<std::pair<size_t, size_t>> &edgePairs) {
   edges.reserve(edges.size() + edgePairs.size());
   for (const auto &[from, to] : edgePairs) {
-    if (from >= vertices.size() || to >= vertices.size() || hasEdge(from, to))
-      continue;
-
     auto edge = std::make_shared<Edge>(vertices[from], vertices[to]);
     edges.push_back(edge);
     vertices[from]->addEdge(edge);
