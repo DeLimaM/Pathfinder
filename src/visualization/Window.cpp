@@ -169,3 +169,26 @@ void Window::drawPathVertices(const Graph &graph, float scale, float offsetX,
     }
   }
 }
+
+void Window::drawLoadingScreen(const char *status, float progress) {
+  clear();
+  drawProgressBar(status, progress);
+  display();
+  handleEvents();
+}
+
+void Window::drawProgressBar(const char *status, float progress) {
+  int centerX = GetScreenWidth() / 2;
+  int centerY = GetScreenHeight() / 2;
+
+  DrawText(status, centerX - MeasureText(status, 20) / 2, centerY - 50, 20,
+           WHITE);
+
+  float barWidth = 300.0f;
+  float barHeight = 20.0f;
+
+  DrawRectangle(centerX - barWidth / 2, centerY - barHeight / 2, barWidth,
+                barHeight, DARKGRAY);
+  DrawRectangle(centerX - barWidth / 2, centerY - barHeight / 2,
+                barWidth * progress, barHeight, GREEN);
+}

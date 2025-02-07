@@ -69,27 +69,7 @@ void PathfindingVisualizer::generateGraph(size_t vertices, Graph &graph) {
   });
 
   while (!generationComplete && !shouldExit) {
-    window.clear();
-
-    const char *currentStatus = status.load();
-    int centerX = GetScreenWidth() / 2;
-    int centerY = GetScreenHeight() / 2;
-
-    DrawText(currentStatus, centerX - MeasureText(currentStatus, 20) / 2,
-             centerY - 50, 20, WHITE);
-
-    float barWidth = 300.0f;
-    float barHeight = 20.0f;
-    float currentProgress = progress.load();
-
-    DrawRectangle(centerX - barWidth / 2, centerY - barHeight / 2, barWidth,
-                  barHeight, DARKGRAY);
-
-    DrawRectangle(centerX - barWidth / 2, centerY - barHeight / 2,
-                  barWidth * currentProgress, barHeight, GREEN);
-
-    window.display();
-    window.handleEvents();
+    window.drawLoadingScreen(status.load(), progress.load());
   }
 
   genThread.join();

@@ -22,6 +22,7 @@ public:
   void setTargetFPS(int fps) { SetTargetFPS(fps); }
   void setPauseState(std::atomic<bool> *pauseState) { isPaused = pauseState; }
   void invalidateStaticCache() { needsStaticRedraw = true; }
+  void drawLoadingScreen(const char *status, float progress);
 
 private:
   Vector2 calculateBounds(const Graph &graph, Vector2 &min, Vector2 &max);
@@ -35,6 +36,7 @@ private:
   void drawStaticElements(float scale, float offsetX, float offsetY);
   void drawPathVertices(const Graph &graph, float scale, float offsetX,
                         float offsetY);
+  void drawProgressBar(const char *status, float progress);
 
 private:
   int width;
