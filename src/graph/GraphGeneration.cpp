@@ -1,4 +1,4 @@
-#include "utils/utils.hpp"
+#include "graph/GraphGeneration.hpp"
 #include "graph/Graph.hpp"
 #include <cstddef>
 #include <random>

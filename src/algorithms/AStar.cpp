@@ -4,6 +4,7 @@
 #include <queue>
 
 float heuristic(const Vector2 &a, const Vector2 &b) {
+  // manhattan distance
   return std::abs(a.x - b.x) + std::abs(a.y - b.y);
 }
 

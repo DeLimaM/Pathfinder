@@ -2,7 +2,7 @@
 #include "Constants.hpp"
 #include "algorithms/PathfindingAlgorithm.hpp"
 #include "graph/Graph.hpp"
-#include "utils/utils.hpp"
+#include "graph/GraphGeneration.hpp"
 #include "visualization/Window.hpp"
 #include <algorithm>
 #include <atomic>
