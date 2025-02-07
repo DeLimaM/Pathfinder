@@ -17,5 +17,7 @@ constexpr Color PATH_COLOR = YELLOW;
 constexpr float BASE_NODE_RADIUS = 5.0f;
 constexpr float START_END_NODE_RADIUS = 10.0f;
 constexpr int SLEEP_TIME = 100;
+// for debug purposes, set to 0 to improve performance
+constexpr int LOADING_SLEEP_TIME = 25;
 
 constexpr int DEFAULT_VERTICES = 1024;
