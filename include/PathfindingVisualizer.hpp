@@ -26,7 +26,7 @@ public:
   void visualizePath(const std::vector<size_t> &currentPath);
   void run(PathfindingAlgorithm &algorithm);
   void setPauseState(std::atomic<bool> *pauseState);
-  void generateGraph(size_t vertices);
+  void generateGraph(size_t vertices, Graph &graph);
 
 private:
   void resetColors();

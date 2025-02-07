@@ -6,10 +6,12 @@
 
 int main() {
   Graph graph;
-  std::atomic<bool> shouldExit = false;
-  std::atomic<bool> isPaused = true;
+  std::atomic<bool> shouldExit;
+  std::atomic_init(&shouldExit, false);
+  std::atomic<bool> isPaused;
+  std::atomic_init(&isPaused, true);
 
-  const size_t vertices = DEFAULT_VERTICES * 8;
+  const size_t vertices = DEFAULT_VERTICES * 4;
   size_t start = 0;
   size_t end = vertices - 1;
 
@@ -17,7 +19,7 @@ int main() {
   PathfindingVisualizer visualizer(graph, shouldExit, start, end);
   visualizer.setPauseState(&isPaused);
 
-  visualizer.generateGraph(vertices);
+  visualizer.generateGraph(vertices, graph);
   visualizer.run(algorithm);
 
   return 0;

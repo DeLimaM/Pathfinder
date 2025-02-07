@@ -34,13 +34,13 @@ void PathfindingVisualizer::visualizePath(
   std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
 }
 
-void PathfindingVisualizer::generateGraph(size_t vertices) {
-  std::atomic<bool> generationComplete = false;
+void PathfindingVisualizer::generateGraph(size_t vertices, Graph &graph) {
+  std::atomic<bool> generationComplete(false);
   float angle = 0.0f;
 
-  std::thread genThread([&]() {
+  std::thread genThread([&generationComplete, &graph, vertices]() {
     createRandomGraph(graph, vertices);
-    generationComplete = true;
+    generationComplete.store(true);
   });
 
   while (!generationComplete && !shouldExit) {
