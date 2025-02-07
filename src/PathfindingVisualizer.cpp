@@ -9,6 +9,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstddef>
+#include <iostream>
 #include <thread>
 #include <vector>
 
@@ -53,10 +54,16 @@ void PathfindingVisualizer::generateGraph(size_t vertices, Graph &graph) {
   std::atomic<bool> generationComplete(false);
   float angle = 0.0f;
 
-  std::thread genThread([&generationComplete, &graph, vertices]() {
-    createRandomGraph(graph, vertices);
-    generationComplete.store(true);
-  });
+  std::chrono::duration<double> elapsed_time;
+  auto start_time = std::chrono::high_resolution_clock::now();
+
+  std::thread genThread(
+      [&generationComplete, &graph, vertices, &elapsed_time, start_time]() {
+        createRandomGraph(graph, vertices);
+        auto end_time = std::chrono::high_resolution_clock::now();
+        elapsed_time = end_time - start_time;
+        generationComplete.store(true);
+      });
 
   while (!generationComplete && !shouldExit) {
     window.clear();
@@ -78,6 +85,9 @@ void PathfindingVisualizer::generateGraph(size_t vertices, Graph &graph) {
 
   genThread.join();
   window.invalidateStaticCache();
+
+  std::cout << "[DEBUG] Graph generation took " << elapsed_time.count() * 1000
+            << " milliseconds for " << vertices << " vertices" << std::endl;
 }
 
 void PathfindingVisualizer::run(PathfindingAlgorithm &algorithm) {

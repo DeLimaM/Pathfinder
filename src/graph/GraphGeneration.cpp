@@ -9,6 +9,9 @@ void createRandomGraph(Graph &graph, size_t vertices) {
   if (vertices < 2)
     return;
 
+  graph.getVertices().reserve(vertices);
+  graph.getEdges().reserve(vertices);
+
   size_t gridWidth = static_cast<size_t>(std::sqrt(vertices));
   size_t gridHeight = (vertices + gridWidth - 1) / gridWidth;
 
@@ -20,6 +23,8 @@ void createRandomGraph(Graph &graph, size_t vertices) {
   std::random_device rd;
   std::mt19937 gen(rd());
 
+  std::uniform_real_distribution<float> offset(-cellWidth / 4, cellWidth / 4);
+
   for (size_t y = 0; y < gridHeight; y++) {
     for (size_t x = 0; x < gridWidth; x++) {
       if (y * gridWidth + x >= vertices)
@@ -28,8 +33,6 @@ void createRandomGraph(Graph &graph, size_t vertices) {
       float posX = WINDOW_PADDING + x * cellWidth;
       float posY = WINDOW_PADDING + y * cellHeight;
 
-      std::uniform_real_distribution<float> offset(-cellWidth / 4,
-                                                   cellWidth / 4);
       posX += offset(gen);
       posY += offset(gen);
 
@@ -54,12 +57,5 @@ void createRandomGraph(Graph &graph, size_t vertices) {
 
     if (y < gridHeight - 1 && i + gridWidth < vertices)
       graph.addEdge(i, i + gridWidth);
-
-    std::uniform_real_distribution<float> chance(0, 1);
-    if (chance(gen) < 0.3) {
-      if (x < gridWidth - 1 && y < gridHeight - 1 &&
-          i + gridWidth + 1 < vertices)
-        graph.addEdge(i, i + gridWidth + 1);
-    }
   }
 }
