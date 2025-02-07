@@ -15,7 +15,9 @@ void createRandomGraph(Graph &graph, size_t vertices) {
   std::vector<Vector2> positions;
   positions.reserve(vertices);
   graph.getVertices().reserve(vertices);
-  graph.getEdges().reserve(gridWidth * gridHeight);
+  size_t expectedEdges =
+      (gridWidth - 1) * gridHeight + (gridHeight - 1) * gridWidth;
+  graph.getEdges().reserve(expectedEdges);
 
   float cellWidth =
       (DEFAULT_WINDOW_WIDTH - 2 * WINDOW_PADDING) / (gridWidth - 1);
