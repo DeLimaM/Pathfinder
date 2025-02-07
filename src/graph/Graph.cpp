@@ -75,3 +75,29 @@ bool Graph::hasEdge(size_t from, size_t to) const {
                               (v1 == vertices[to] && v2 == vertices[from]);
                      });
 }
+
+void Graph::addVerticesBulk(const std::vector<Vector2> &positions) {
+  vertices.reserve(vertices.size() + positions.size());
+  for (const auto &pos : positions) {
+    vertices.push_back(std::make_shared<Vertex>(pos));
+  }
+
+  if (!vertices.empty()) {
+    vertices.front()->setColor(START_NODE_COLOR);
+    vertices.back()->setColor(END_NODE_COLOR);
+  }
+}
+
+void Graph::addEdgesBulk(
+    const std::vector<std::pair<size_t, size_t>> &edgePairs) {
+  edges.reserve(edges.size() + edgePairs.size());
+  for (const auto &[from, to] : edgePairs) {
+    if (from >= vertices.size() || to >= vertices.size() || hasEdge(from, to))
+      continue;
+
+    auto edge = std::make_shared<Edge>(vertices[from], vertices[to]);
+    edges.push_back(edge);
+    vertices[from]->addEdge(edge);
+    vertices[to]->addEdge(edge);
+  }
+}

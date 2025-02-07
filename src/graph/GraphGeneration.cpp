@@ -12,6 +12,7 @@ void createRandomGraph(Graph &graph, size_t vertices) {
   size_t gridWidth = static_cast<size_t>(std::sqrt(vertices));
   size_t gridHeight = (vertices + gridWidth - 1) / gridWidth;
 
+  // reserve space for vertices and edges
   std::vector<Vector2> positions;
   positions.reserve(vertices);
   graph.getVertices().reserve(vertices);
@@ -41,25 +42,23 @@ void createRandomGraph(Graph &graph, size_t vertices) {
   }
 
   // add vertices
-  for (size_t i = 0; i < positions.size(); i++) {
-    size_t vertexId = graph.addVertex(positions[i]);
-    if (i == 0) {
-      graph.getVertex(vertexId)->setColor(START_NODE_COLOR);
-    } else if (i == vertices - 1) {
-      graph.getVertex(vertexId)->setColor(END_NODE_COLOR);
-    }
-  }
+  graph.addVerticesBulk(positions);
 
   // add edges
+  std::vector<std::pair<size_t, size_t>> edgePairs;
+  edgePairs.reserve(expectedEdges);
+
   for (size_t i = 0; i < vertices; i++) {
     size_t x = i % gridWidth;
     size_t y = i / gridWidth;
 
     if (x < gridWidth - 1 && i + 1 < vertices) {
-      graph.addEdge(i, i + 1);
+      edgePairs.emplace_back(i, i + 1);
     }
     if (y < gridHeight - 1 && i + gridWidth < vertices) {
-      graph.addEdge(i, i + gridWidth);
+      edgePairs.emplace_back(i, i + gridWidth);
     }
   }
+
+  graph.addEdgesBulk(edgePairs);
 }

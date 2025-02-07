@@ -11,7 +11,9 @@ public:
   ~Graph() = default;
 
   size_t addVertex(Vector2 position);
+  void addVerticesBulk(const std::vector<Vector2> &positions);
   void addEdge(size_t from, size_t to);
+  void addEdgesBulk(const std::vector<std::pair<size_t, size_t>> &edgePairs);
   void removeVertex(size_t id);
   void removeEdge(size_t from, size_t to);
 
