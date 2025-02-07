@@ -52,32 +52,41 @@ void PathfindingVisualizer::visualizePath(
 
 void PathfindingVisualizer::generateGraph(size_t vertices, Graph &graph) {
   std::atomic<bool> generationComplete(false);
-  float angle = 0.0f;
+  std::atomic<float> progress(0.0f);
+  std::atomic<const char *> status("Initializing graph generation...");
 
   std::chrono::duration<double> elapsed_time;
   auto start_time = std::chrono::high_resolution_clock::now();
 
-  std::thread genThread(
-      [&generationComplete, &graph, vertices, &elapsed_time, start_time]() {
-        createRandomGraph(graph, vertices);
-        auto end_time = std::chrono::high_resolution_clock::now();
-        elapsed_time = end_time - start_time;
-        generationComplete.store(true);
-      });
+  std::thread genThread([&generationComplete, &graph, vertices, &elapsed_time,
+                         start_time, &progress, &status]() {
+    status.store("Setting up grid layout...");
+    progress.store(0.1f);
+    createRandomGraph(graph, vertices, &progress, &status);
+    auto end_time = std::chrono::high_resolution_clock::now();
+    elapsed_time = end_time - start_time;
+    generationComplete.store(true);
+  });
 
   while (!generationComplete && !shouldExit) {
     window.clear();
 
+    const char *currentStatus = status.load();
     int centerX = GetScreenWidth() / 2;
     int centerY = GetScreenHeight() / 2;
 
-    float radius = 40.0f;
-    Vector2 center = {static_cast<float>(centerX), static_cast<float>(centerY)};
-    Vector2 end = {center.x + radius * cosf(angle),
-                   center.y + radius * sinf(angle)};
-    DrawLineEx(center, end, 2.0f, WHITE);
+    DrawText(currentStatus, centerX - MeasureText(currentStatus, 20) / 2,
+             centerY - 50, 20, WHITE);
 
-    angle += 0.1f;
+    float barWidth = 300.0f;
+    float barHeight = 20.0f;
+    float currentProgress = progress.load();
+
+    DrawRectangle(centerX - barWidth / 2, centerY - barHeight / 2, barWidth,
+                  barHeight, DARKGRAY);
+
+    DrawRectangle(centerX - barWidth / 2, centerY - barHeight / 2,
+                  barWidth * currentProgress, barHeight, GREEN);
 
     window.display();
     window.handleEvents();
