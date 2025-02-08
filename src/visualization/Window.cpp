@@ -52,6 +52,8 @@ void Window::draw(const Graph &graph) {
   if (graph.getVertices().empty())
     return;
 
+  frameTime = GetFrameTime() * 1000.0f;
+
   Vector2 min, max;
   calculateBounds(graph, min, max);
   float scale = calculateScale(min, max);
@@ -68,8 +70,6 @@ void Window::draw(const Graph &graph) {
   drawPathVertices(graph, scale, offsetX, offsetY);
   drawStats();
   EndBlendMode();
-
-  DrawFPS(10, 10);
 }
 
 Vector2 Window::calculateBounds(const Graph &graph, Vector2 &min,
@@ -207,8 +207,6 @@ void Window::drawStats() {
   const int lineHeight = fontSize + 5;
   int currentY = padding;
 
-  DrawRectangle(padding, padding, 300, 6 * lineHeight, ColorAlpha(BLACK, 0.7f));
-
   DrawText(("Algorithm: " + algorithmName).c_str(), padding + 5, currentY,
            fontSize, WHITE);
   currentY += lineHeight;
@@ -218,6 +216,10 @@ void Window::drawStats() {
   currentY += lineHeight;
 
   DrawText(TextFormat("Time: %.3f s", elapsedTime), padding + 5, currentY,
+           fontSize, WHITE);
+  currentY += lineHeight;
+
+  DrawText(TextFormat("Frame time: %.2f ms", frameTime), padding + 5, currentY,
            fontSize, WHITE);
   currentY += lineHeight;
 

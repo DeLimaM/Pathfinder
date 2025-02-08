@@ -58,4 +58,5 @@ private:
   int nodesVisited;
   float elapsedTime;
   size_t totalVertices;
+  float frameTime;
 };
