@@ -7,6 +7,7 @@ class AStar : public PathfindingAlgorithm {
 public:
   using PathfindingAlgorithm::PathfindingAlgorithm;
 
+  AStar() : PathfindingAlgorithm("A*") {}
   std::vector<size_t> findPath(const Graph &graph, size_t start,
                                size_t end) override;
 };

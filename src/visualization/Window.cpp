@@ -66,6 +66,7 @@ void Window::draw(const Graph &graph) {
   BeginBlendMode(BLEND_ALPHA);
   drawEdges(graph, scale, offsetX, offsetY, PATH_COLOR);
   drawPathVertices(graph, scale, offsetX, offsetY);
+  drawStats();
   EndBlendMode();
 
   DrawFPS(10, 10);
@@ -198,4 +199,28 @@ void Window::drawProgressBar(const char *status, float progress) {
                 barHeight, DARKGRAY);
   DrawRectangle(centerX - barWidth / 2, centerY - barHeight / 2,
                 barWidth * progress, barHeight, GREEN);
+}
+
+void Window::drawStats() {
+  const int padding = 10;
+  const int fontSize = 20;
+  const int lineHeight = fontSize + 5;
+  int currentY = padding;
+
+  DrawRectangle(padding, padding, 300, 6 * lineHeight, ColorAlpha(BLACK, 0.7f));
+
+  DrawText(("Algorithm: " + algorithmName).c_str(), padding + 5, currentY,
+           fontSize, WHITE);
+  currentY += lineHeight;
+
+  DrawText(TextFormat("Nodes visited: %d/%zu", nodesVisited, totalVertices),
+           padding + 5, currentY, fontSize, WHITE);
+  currentY += lineHeight;
+
+  DrawText(TextFormat("Time: %.3f s", elapsedTime), padding + 5, currentY,
+           fontSize, WHITE);
+  currentY += lineHeight;
+
+  DrawText(TextFormat("Total vertices: %zu", totalVertices), padding + 5,
+           currentY, fontSize, WHITE);
 }

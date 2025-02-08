@@ -3,6 +3,7 @@
 #include "./raylib.h"
 #include "Constants.hpp"
 #include <atomic>
+#include <string>
 
 class Window {
 public:
@@ -23,6 +24,13 @@ public:
   void setPauseState(std::atomic<bool> *pauseState) { isPaused = pauseState; }
   void invalidateStaticCache() { needsStaticRedraw = true; }
   void drawLoadingScreen(const char *status, float progress);
+  void setStats(const std::string &algName, int visited, float time) {
+    algorithmName = algName;
+    nodesVisited = visited;
+    elapsedTime = time;
+    totalVertices = graph.getVertices().size();
+  }
+  void drawStats();
 
 private:
   Vector2 calculateBounds(const Graph &graph, Vector2 &min, Vector2 &max);
@@ -46,4 +54,8 @@ private:
   std::atomic<bool> *isPaused;
   RenderTexture2D staticBackground;
   bool needsStaticRedraw;
+  std::string algorithmName;
+  int nodesVisited;
+  float elapsedTime;
+  size_t totalVertices;
 };

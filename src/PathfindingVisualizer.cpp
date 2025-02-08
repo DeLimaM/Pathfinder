@@ -87,9 +87,21 @@ void PathfindingVisualizer::generateGraph(size_t vertices, Graph &graph) {
 }
 
 void PathfindingVisualizer::run(PathfindingAlgorithm &algorithm) {
+  auto startTime = std::chrono::high_resolution_clock::now();
+  int visitedNodes = 0;
+
   std::thread algorithmThread([&]() {
     algorithm.setVisualizationCallback(
-        [this](const std::vector<size_t> &path) { this->visualizePath(path); });
+        [this, &visitedNodes, &startTime,
+         &algorithm](const std::vector<size_t> &path) {
+          visitedNodes++;
+          auto currentTime = std::chrono::high_resolution_clock::now();
+          float elapsed =
+              std::chrono::duration<float>(currentTime - startTime).count();
+
+          window.setStats(algorithm.getName(), visitedNodes, elapsed);
+          this->visualizePath(path);
+        });
     algorithm.findPath(graph, start, end);
   });
 
