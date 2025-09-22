@@ -1,4 +1,5 @@
 #include "algorithms/Dijkstra.hpp"
+#include <algorithm>
 #include <limits>
 #include <queue>
 

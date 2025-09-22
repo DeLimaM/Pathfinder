@@ -59,4 +59,5 @@ private:
   float elapsedTime;
   size_t totalVertices;
   float frameTime;
+  Font font;
 };

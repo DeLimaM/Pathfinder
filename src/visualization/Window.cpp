@@ -10,10 +10,12 @@ Window::Window(const Graph &graph, std::atomic<bool> &shouldExit, int width,
   SetTargetFPS(TARGET_FPS);
 
   staticBackground = LoadRenderTexture(width, height);
+  font = LoadFontEx("fonts/Iosevka.ttf", 20, nullptr, 0);
   needsStaticRedraw = true;
 }
 
 Window::~Window() {
+  UnloadFont(font);
   UnloadRenderTexture(staticBackground);
   CloseWindow();
 }
@@ -207,22 +209,27 @@ void Window::drawStats() {
   const int lineHeight = fontSize + 5;
   int currentY = padding;
 
-  DrawText(("Algorithm: " + algorithmName).c_str(), padding + 5, currentY,
-           fontSize, WHITE);
+  DrawTextEx(font, ("Algorithm: " + algorithmName).c_str(),
+             Vector2{(float)(padding + 5), (float)currentY}, fontSize, 1.0f,
+             WHITE);
   currentY += lineHeight;
 
-  DrawText(TextFormat("Nodes visited: %d/%zu", nodesVisited, totalVertices),
-           padding + 5, currentY, fontSize, WHITE);
+  DrawTextEx(
+      font, TextFormat("Nodes visited: %d/%zu", nodesVisited, totalVertices),
+      Vector2{(float)(padding + 5), (float)currentY}, fontSize, 1.0f, WHITE);
   currentY += lineHeight;
 
-  DrawText(TextFormat("Time: %.3f s", elapsedTime), padding + 5, currentY,
-           fontSize, WHITE);
+  DrawTextEx(font, TextFormat("Time: %.3f s", elapsedTime),
+             Vector2{(float)(padding + 5), (float)currentY}, fontSize, 1.0f,
+             WHITE);
   currentY += lineHeight;
 
-  DrawText(TextFormat("Frame time: %.2f ms", frameTime), padding + 5, currentY,
-           fontSize, WHITE);
+  DrawTextEx(font, TextFormat("Frame time: %.2f ms", frameTime),
+             Vector2{(float)(padding + 5), (float)currentY}, fontSize, 1.0f,
+             WHITE);
   currentY += lineHeight;
 
-  DrawText(TextFormat("Total vertices: %zu", totalVertices), padding + 5,
-           currentY, fontSize, WHITE);
+  DrawTextEx(font, TextFormat("Total vertices: %zu", totalVertices),
+             Vector2{(float)(padding + 5), (float)currentY}, fontSize, 1.0f,
+             WHITE);
 }

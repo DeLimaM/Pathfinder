@@ -1,4 +1,5 @@
 #include "algorithms/AStar.hpp"
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <queue>
