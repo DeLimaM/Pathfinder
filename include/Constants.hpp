@@ -6,6 +6,7 @@ constexpr int DEFAULT_WINDOW_HEIGHT = 600;
 constexpr int TARGET_FPS = 60;
 constexpr const char *WINDOW_TITLE = "Pathfinder";
 const float WINDOW_PADDING = 50.0f;
+const int FONT_SIZE = 20;
 
 constexpr Color BACKGROUND_COLOR = BLACK;
 constexpr Color NODE_COLOR = GRAY;
@@ -18,6 +19,6 @@ constexpr float BASE_NODE_RADIUS = 5.0f;
 constexpr float START_END_NODE_RADIUS = 10.0f;
 constexpr int SLEEP_TIME = 100;
 // for debug purposes, set to 0 to improve performance
-constexpr int LOADING_SLEEP_TIME = 25;
+constexpr int LOADING_SLEEP_TIME = 0;
 
 constexpr int DEFAULT_VERTICES = 1024;

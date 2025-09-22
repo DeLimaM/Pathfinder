@@ -10,7 +10,7 @@ Window::Window(const Graph &graph, std::atomic<bool> &shouldExit, int width,
   SetTargetFPS(TARGET_FPS);
 
   staticBackground = LoadRenderTexture(width, height);
-  font = LoadFontEx("fonts/Iosevka.ttf", 20, nullptr, 0);
+  font = LoadFontEx("fonts/Iosevka.ttf", FONT_SIZE, nullptr, 0);
   needsStaticRedraw = true;
 }
 
