@@ -46,4 +46,7 @@ help:
 	@echo "  run     - Build and run the program"
 	@echo "  restart - Clean, rebuild and run"
 
+install:
+	sudo cp $(TARGET) /usr/bin/pathfinder
+
 .PHONY: all build clean rebuild run restart create_dirs help
